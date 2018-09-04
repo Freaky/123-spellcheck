@@ -21,7 +21,7 @@ fn main() {
     let mail = parse_mail(&input).expect("parsing email");
 
     let mut speller = SpellLauncher::new()
-                          .hunspell()
+                          .aspell()
                           .dictionary(LANG)
                           .launch()
                           .expect("Can't run spell checker");
