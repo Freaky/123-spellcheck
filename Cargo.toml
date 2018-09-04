@@ -1,0 +1,9 @@
+[package]
+name = "neils_form_spellchecker"
+version = "0.1.0"
+authors = ["Thomas Hurst <tom@hur.st>"]
+
+[dependencies]
+select = "0.4.2"
+mailparse = "0.6.2"
+ispell = "0.3.0"
