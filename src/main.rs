@@ -1,7 +1,6 @@
-
+extern crate ispell;
 extern crate mailparse;
 extern crate select;
-extern crate ispell;
 
 use mailparse::*;
 
@@ -10,8 +9,8 @@ use select::predicate::Name;
 
 use ispell::SpellLauncher;
 
-use std::io::{self, Read};
 use std::collections::HashSet;
+use std::io::{self, Read};
 
 const LANG: &str = "en_GB";
 
@@ -22,20 +21,28 @@ fn main() {
     let mail = parse_mail(&input).expect("parsing email");
 
     let mut speller = SpellLauncher::new()
-                          .aspell()
-                          .dictionary(LANG)
-                          .launch()
-                          .expect("Can't run spell checker");
+        .aspell()
+        .dictionary(LANG)
+        .launch()
+        .expect("Can't run spell checker");
 
-    let allow_words = std::fs::read_to_string("words.allow").unwrap_or_default().lines().map(str::to_string).collect::<HashSet<_>>();
-    let deny_words = std::fs::read_to_string("words.deny").unwrap_or_default().lines().map(str::to_string).collect::<HashSet<_>>();
+    let allow_words = std::fs::read_to_string("words.allow")
+        .unwrap_or_default()
+        .lines()
+        .map(str::to_string)
+        .collect::<HashSet<_>>();
+    let deny_words = std::fs::read_to_string("words.deny")
+        .unwrap_or_default()
+        .lines()
+        .map(str::to_string)
+        .collect::<HashSet<_>>();
 
     // fall back to raw input?
     let body = mail.get_body().expect("Can't extract email body");
 
     let doc = Document::from(&body[..]);
 
-let header = r#"<html>
+    let header = r#"<html>
   <head>
     <meta charset='UTF-8'>
     <style>
@@ -71,32 +78,37 @@ let header = r#"<html>
         let answer = cols.next().expect("Couldn't find answer").text();
 
         // squish multiple blank lines.
-        let answer = answer.lines()
-                           .filter(|s| { !s.is_empty() })
-                           .collect::<Vec<&str>>()
-                           .join("\n\n");
+        let answer = answer
+            .lines()
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<&str>>()
+            .join("\n\n");
 
-        let corrected = answer.lines()
+        let corrected = answer
+            .lines()
             .map(|line| {
                 // Work word-by-word to make marking them easier.  Sadly loses things
                 // like double-spaces.
-                line.split_whitespace().map(|word|
-                    {
+                line.split_whitespace()
+                    .map(|word| {
                         let errors = speller.check(word).expect("Spellcheck error");
 
                         // XXX: need to deal with punctuation
-                        if !deny_words.contains(word) && (errors.is_empty() || allow_words.contains(word)) {
+                        if !deny_words.contains(word)
+                            && (errors.is_empty() || allow_words.contains(word))
+                        {
                             word.to_string()
                         } else {
                             format!("<mark>{}</mark>", word)
                         }
-                    }
-                ).collect::<Vec<String>>().join(" ")
-            }).collect::<Vec<String>>().join("<br>\n");
+                    }).collect::<Vec<String>>()
+                    .join(" ")
+            }).collect::<Vec<String>>()
+            .join("<br>\n");
 
         let out = match &question[..] {
             "Name" | "Date" => answer,
-            _ => corrected
+            _ => corrected,
         };
 
         println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", question, out);
