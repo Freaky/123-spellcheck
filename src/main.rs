@@ -11,6 +11,7 @@ use select::predicate::Name;
 use ispell::SpellLauncher;
 
 use std::io::{self, Read};
+use std::collections::HashSet;
 
 const LANG: &str = "en_GB";
 
@@ -25,6 +26,9 @@ fn main() {
                           .dictionary(LANG)
                           .launch()
                           .expect("Can't run spell checker");
+
+    let allow_words = std::fs::read_to_string("words.allow").unwrap_or_default().lines().map(str::to_string).collect::<HashSet<_>>();
+    let deny_words = std::fs::read_to_string("words.deny").unwrap_or_default().lines().map(str::to_string).collect::<HashSet<_>>();
 
     // fall back to raw input?
     let body = mail.get_body().expect("Can't extract email body");
@@ -80,7 +84,8 @@ let header = r#"<html>
                     {
                         let errors = speller.check(word).expect("Spellcheck error");
 
-                        if errors.is_empty() {
+                        // XXX: need to deal with punctuation
+                        if !deny_words.contains(word) && (errors.is_empty() || allow_words.contains(word)) {
                             word.to_string()
                         } else {
                             format!("<mark>{}</mark>", word)
