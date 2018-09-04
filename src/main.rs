@@ -94,7 +94,12 @@ let header = r#"<html>
                 ).collect::<Vec<String>>().join(" ")
             }).collect::<Vec<String>>().join("<br>\n");
 
-        println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", question, corrected);
+        let out = match &question[..] {
+            "Name" | "Date" => answer,
+            _ => corrected
+        };
+
+        println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", question, out);
     }
     println!("</body></html>");
 }
