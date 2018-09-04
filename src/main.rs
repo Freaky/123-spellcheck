@@ -31,16 +31,35 @@ fn main() {
 
     let doc = Document::from(&body[..]);
 
-    println!(
-"<html>
+let header = r#"<html>
   <head>
     <meta charset='UTF-8'>
     <style>
-      mark {{ background-color: purple;color: white; }}
+      body {
+        line-height: 1.3;
+        font: Georgia, 'Times New Roman', Times, serif;
+      }
+
+      mark {
+        background-color: purple;
+        color: white;
+      }
+
+      @media print {
+        mark {
+          text-decoration: underline;
+        }
+      }
+
+      @page {
+        margin: 2cm;
+      }
     </style>
   </head>
   <body>
-");
+"#;
+    println!("{}", header);
+
     for row in doc.find(Name("tr")) {
         let mut cols = row.find(Name("td"));
 
