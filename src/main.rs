@@ -19,7 +19,7 @@ fn load_wordlist(name: &str) -> HashSet<String> {
         .unwrap_or_default()
         .lines()
         .map(str::trim)
-        .filter(|s| s.is_empty())
+        .filter(|s| !s.is_empty())
         .map(str::to_string)
         .collect()
 }
