@@ -109,18 +109,19 @@ fn main() {
             .lines()
             .map(|line| {
                 // Work word-by-word to make marking them easier.  Sadly loses things
-                // like double-spaces.
+                // like double-spaces.  Also problematic with incorrect whitespace
+                // with punctuation.
                 line.split_whitespace()
                     .map(|word| {
-                        let errors = speller.check(word).expect("Spellcheck error");
+                        let trimmed_word = word.trim_matches(|ch: char| ch.is_ascii_punctuation());
+                        let errors = speller.check(trimmed_word).expect("Spellcheck error");
 
-                        // XXX: need to deal with punctuation
-                        if !deny_words.contains(word)
-                            && (errors.is_empty() || allow_words.contains(word))
+                        if !deny_words.contains(trimmed_word)
+                            && (errors.is_empty() || allow_words.contains(trimmed_word))
                         {
-                            word.to_string()
+                            htmlentities(word)
                         } else {
-                            format!("<mark>{}</mark>", word)
+                            format!("<mark>{}</mark>", htmlentities(word))
                         }
                     }).collect::<Vec<String>>()
                     .join(" ")
@@ -128,14 +129,14 @@ fn main() {
             .join("<br>\n");
 
         let out = match &question[..] {
-            "Name" | "Date" => answer,
+            "Name" | "Date" => htmlentities(&answer),
             _ => corrected,
         };
 
         println!(
             "<section>\n<h1>{}</h1>\n<p>{}</p></section>",
             htmlentities(&question),
-            htmlentities(&out)
+            out
         );
     }
     println!("</body></html>");
