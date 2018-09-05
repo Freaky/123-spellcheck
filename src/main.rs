@@ -76,34 +76,41 @@ fn htmlentities(txt: &str) -> String {
         }).collect()
 }
 
-fn main() {
+fn main() -> Result<(), String> {
     let config_file: PathBuf = std::env::args_os()
         .nth(1)
         .unwrap_or_else(|| "spellcheck.toml".into())
         .into();
-    let config = std::fs::read_to_string(config_file).expect("Can't read spellcheck.toml");
-    let config: Config = toml::from_str(&config).expect("Can't parse spellcheck.toml");
+
+    let config = std::fs::read_to_string(&config_file)
+        .map_err(|e| format!("Error opening {}: {}", &config_file.display(), e))?;
+    let config: Config = toml::from_str(&config)
+        .map_err(|e| format!("Error parsing {}: {}", &config_file.display(), e))?;
 
     let mut input = Vec::new();
     io::stdin()
         .take(config.email.max_size_kb.unwrap_or(128) * 1024)
         .read_to_end(&mut input)
-        .expect("reading input");
+        .map_err(|e| format!("stdin: {}", e))?;
 
-    let mail = parse_mail(&input).expect("parsing email");
+    let mail = parse_mail(&input).map_err(|e| format!("email parse: {}", e))?;
 
     let mut speller = SpellLauncher::new()
         .aspell()
         .dictionary(config.lang.clone())
         .launch()
-        .expect("Can't run spell checker");
+        .map_err(|e| format!("aspell start: {}", e))?;
 
     for word in &config.words.allow {
-        speller.add_word(word).expect("couldn't add allow word");
+        speller
+            .add_word(word)
+            .map_err(|e| format!("aspell add word: {}", e))?;
     }
 
     // fall back to raw input?
-    let body = mail.get_body().expect("Can't extract email body");
+    let body = mail
+        .get_body()
+        .map_err(|e| format!("email lacks body: {}", e))?;
 
     let doc = Document::from(&body[..]);
 
@@ -143,8 +150,14 @@ fn main() {
     for row in doc.find(Name("tr")) {
         let mut cols = row.find(Name("td"));
 
-        let question = cols.next().expect("Couldn't find question").text();
-        let answer = cols.next().expect("Couldn't find answer").text();
+        let question = cols
+            .next()
+            .ok_or_else(|| "Couldn't find question".to_string())?
+            .text();
+        let answer = cols
+            .next()
+            .ok_or_else(|| "Couldn't find answer".to_string())?
+            .text();
 
         // squish multiple blank lines.
         let answer = answer
@@ -208,8 +221,12 @@ fn main() {
         .html(out) // XXX: also attach the original?
         .child(attachment)
         .build()
-        .expect("Failed to build email");
+        .map_err(|e| format!("Failed to build email: {}", e))?;
 
     let mut mailer = SendmailTransport::new_with_command("./cat.sh");
-    mailer.send(&fwd).expect("Error sending mail");
+    mailer
+        .send(&fwd)
+        .map_err(|e| format!("Failed to send email: {}", e))?;
+
+    Ok(())
 }
