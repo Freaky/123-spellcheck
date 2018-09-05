@@ -23,6 +23,19 @@ fn load_wordlist(name: &str) -> HashSet<String> {
         .collect()
 }
 
+fn htmlentities(txt: &str) -> String {
+    txt.matches(|_| true).map(|ch| {
+        match ch {
+            ">" => "&gt;",
+            "<" => "&lt;",
+            "&" => "&amp;",
+            "'" => "&#39;",
+            "\"" => "&quot;",
+            _ => ch
+        }
+    }).collect()
+}
+
 fn main() {
     let mut input = Vec::new();
     io::stdin().take(1024 * 128).read_to_end(&mut input).expect("reading input");
@@ -116,7 +129,7 @@ fn main() {
             _ => corrected,
         };
 
-        println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", question, out);
+        println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", htmlentities(&question), htmlentities(&out));
     }
     println!("</body></html>");
 }
