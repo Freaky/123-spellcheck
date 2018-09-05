@@ -212,10 +212,16 @@ fn main() -> Result<(), String> {
         .header(("Content-Transfer-Encoding", "base64"))
         .build();
 
+    let orig_subject = mail
+        .headers
+        .get_first_value("Subject")
+        .expect("Subject")
+        .unwrap_or_else(|| "<no subject>".to_string());
+
     let fwd = EmailBuilder::new()
         .to(config.email.to.to_mailbox())
         .from(config.email.from.to_mailbox())
-        .subject(format!("[SPELL]: {}", mail.headers.get_first_value("Subject").expect("Subject").unwrap_or_else(|| "<no subject>".to_string())))
+        .subject(format!("[SPELL]: {}", orig_subject))
         .header(("Return-Path", config.email.return_path))
         .message_type(MimeMultipartType::Mixed)
         .html(out) // XXX: also attach the original?
