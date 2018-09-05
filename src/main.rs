@@ -24,21 +24,23 @@ fn load_wordlist(name: &str) -> HashSet<String> {
 }
 
 fn htmlentities(txt: &str) -> String {
-    txt.matches(|_| true).map(|ch| {
-        match ch {
+    txt.matches(|_| true)
+        .map(|ch| match ch {
             ">" => "&gt;",
             "<" => "&lt;",
             "&" => "&amp;",
             "'" => "&#39;",
             "\"" => "&quot;",
-            _ => ch
-        }
-    }).collect()
+            _ => ch,
+        }).collect()
 }
 
 fn main() {
     let mut input = Vec::new();
-    io::stdin().take(1024 * 128).read_to_end(&mut input).expect("reading input");
+    io::stdin()
+        .take(1024 * 128)
+        .read_to_end(&mut input)
+        .expect("reading input");
 
     let mail = parse_mail(&input).expect("parsing email");
 
@@ -129,7 +131,11 @@ fn main() {
             _ => corrected,
         };
 
-        println!("<section>\n<h1>{}</h1>\n<p>{}</p></section>", htmlentities(&question), htmlentities(&out));
+        println!(
+            "<section>\n<h1>{}</h1>\n<p>{}</p></section>",
+            htmlentities(&question),
+            htmlentities(&out)
+        );
     }
     println!("</body></html>");
 }
