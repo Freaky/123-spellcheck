@@ -4,11 +4,14 @@ extern crate lettre;
 extern crate lettre_email;
 extern crate mailparse;
 extern crate select;
+#[macro_use]
+extern crate serde_derive;
+extern crate toml;
 
 use mailparse::*;
 
 use lettre::{EmailTransport, SendmailTransport};
-use lettre_email::{EmailBuilder, PartBuilder, MimeMultipartType};
+use lettre_email::{EmailBuilder, Mailbox, MimeMultipartType, PartBuilder};
 
 use select::document::Document;
 use select::predicate::Name;
@@ -18,21 +21,47 @@ use ispell::SpellLauncher;
 use std::collections::HashSet;
 use std::fmt::Write;
 use std::io::{self, Read};
+use std::path::PathBuf;
 
-const LANG: &str = "en_GB";
-const TO_ADDR: (&str, &str) = ("tom@hur.st", "Thomas Hurst");
-// const TO_ADDR: (&str, &str) = ("NR.Pollard@mbro.ac.uk", "Neil R Pollard");
-const FROM_ADDR: (&str, &str) = ("spellcheck@aagh.net", "Neil's Spellchecker");
-const RETURN_ADDR: &str = "noreply@aagh.net";
+#[derive(Deserialize, PartialEq, Debug)]
+#[serde(deny_unknown_fields)]
+struct Config {
+    lang: String,
+    words: Words,
+    email: EmailConfig,
+}
 
-fn load_wordlist(name: &str) -> HashSet<String> {
-    std::fs::read_to_string(name)
-        .unwrap_or_default()
-        .lines()
-        .map(str::trim)
-        .filter(|s| !s.is_empty())
-        .map(str::to_string)
-        .collect()
+#[derive(Deserialize, PartialEq, Debug, Default)]
+#[serde(deny_unknown_fields, default)]
+struct Words {
+    allow: HashSet<String>,
+    deny: HashSet<String>,
+}
+
+#[derive(Deserialize, PartialEq, Debug)]
+#[serde(deny_unknown_fields)]
+struct EmailConfig {
+    max_size_kb: Option<u64>,
+    to: EmailAddr,
+    from: EmailAddr,
+    return_path: String,
+}
+
+#[derive(Deserialize, PartialEq, Debug)]
+#[serde(deny_unknown_fields)]
+struct EmailAddr {
+    name: Option<String>,
+    address: String,
+}
+
+impl EmailAddr {
+    fn to_mailbox(&self) -> Mailbox {
+        if let Some(ref name) = self.name {
+            Mailbox::new_with_name(name.to_string(), self.address.clone())
+        } else {
+            Mailbox::new(self.address.clone())
+        }
+    }
 }
 
 fn htmlentities(txt: &str) -> String {
@@ -48,9 +77,16 @@ fn htmlentities(txt: &str) -> String {
 }
 
 fn main() {
+    let config_file: PathBuf = std::env::args_os()
+        .nth(1)
+        .unwrap_or_else(|| "spellcheck.toml".into())
+        .into();
+    let config = std::fs::read_to_string(config_file).expect("Can't read spellcheck.toml");
+    let config: Config = toml::from_str(&config).expect("Can't parse spellcheck.toml");
+
     let mut input = Vec::new();
     io::stdin()
-        .take(1024 * 128)
+        .take(config.email.max_size_kb.unwrap_or(128) * 1024)
         .read_to_end(&mut input)
         .expect("reading input");
 
@@ -58,14 +94,11 @@ fn main() {
 
     let mut speller = SpellLauncher::new()
         .aspell()
-        .dictionary(LANG)
+        .dictionary(config.lang.clone())
         .launch()
         .expect("Can't run spell checker");
 
-    let allow_words = load_wordlist("words.allow");
-    let deny_words = load_wordlist("words.deny");
-
-    for word in &allow_words {
+    for word in &config.words.allow {
         speller.add_word(word).expect("couldn't add allow word");
     }
 
@@ -131,9 +164,7 @@ fn main() {
                         let trimmed_word = word.trim_matches(|ch: char| ch.is_ascii_punctuation());
                         let errors = speller.check(trimmed_word).expect("Spellcheck error");
 
-                        if !deny_words.contains(trimmed_word)
-                            && (errors.is_empty() || allow_words.contains(trimmed_word))
-                        {
+                        if !config.words.deny.contains(trimmed_word) && (errors.is_empty()) {
                             htmlentities(word)
                         } else {
                             format!("<mark>{}</mark>", htmlentities(word))
@@ -163,23 +194,16 @@ fn main() {
         .body(encoded_body)
         .header((
             "Content-Disposition",
-            "attachment; filename=\"original.html\""
-        ))
-        .header((
-            "Content-Type",
-            "text/html"
-        ))
-        .header((
-            "Content-Transfer-Encoding",
-            "base64"
-        ))
+            "attachment; filename=\"original.html\"",
+        )).header(("Content-Type", "text/html"))
+        .header(("Content-Transfer-Encoding", "base64"))
         .build();
 
     let fwd = EmailBuilder::new()
-        .to(TO_ADDR)
-        .from(FROM_ADDR)
+        .to(config.email.to.to_mailbox())
+        .from(config.email.from.to_mailbox())
         .subject(format!("[SPELL]: {}", mail.headers.get_first_value("Subject").expect("Subject").unwrap_or_else(|| "<no subject>".to_string())))
-        .header(("Return-Path", RETURN_ADDR))
+        .header(("Return-Path", config.email.return_path))
         .message_type(MimeMultipartType::Mixed)
         .html(out) // XXX: also attach the original?
         .child(attachment)
