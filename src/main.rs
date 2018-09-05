@@ -14,6 +14,15 @@ use std::io::{self, Read};
 
 const LANG: &str = "en_GB";
 
+fn load_wordlist(name: &str) -> HashSet<String> {
+    std::fs::read_to_string(name)
+        .unwrap_or_default()
+        .lines()
+        .map(str::trim)
+        .map(str::to_string)
+        .collect()
+}
+
 fn main() {
     let mut input = Vec::new();
     io::stdin().read_to_end(&mut input).expect("reading input");
@@ -26,16 +35,12 @@ fn main() {
         .launch()
         .expect("Can't run spell checker");
 
-    let allow_words = std::fs::read_to_string("words.allow")
-        .unwrap_or_default()
-        .lines()
-        .map(str::to_string)
-        .collect::<HashSet<_>>();
-    let deny_words = std::fs::read_to_string("words.deny")
-        .unwrap_or_default()
-        .lines()
-        .map(str::to_string)
-        .collect::<HashSet<_>>();
+    let allow_words = load_wordlist("words.allow");
+    let deny_words = load_wordlist("words.deny");
+
+    for word in &allow_words {
+        speller.add_word(word).expect("couldn't add allow word");
+    }
 
     // fall back to raw input?
     let body = mail.get_body().expect("Can't extract email body");
