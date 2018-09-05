@@ -1,3 +1,4 @@
+extern crate base64;
 extern crate ispell;
 extern crate lettre;
 extern crate lettre_email;
@@ -7,7 +8,7 @@ extern crate select;
 use mailparse::*;
 
 use lettre::{EmailTransport, SendmailTransport};
-use lettre_email::{EmailBuilder, Header};
+use lettre_email::{EmailBuilder, PartBuilder, MimeMultipartType};
 
 use select::document::Document;
 use select::predicate::Name;
@@ -20,6 +21,7 @@ use std::io::{self, Read};
 
 const LANG: &str = "en_GB";
 const TO_ADDR: (&str, &str) = ("tom@hur.st", "Thomas Hurst");
+// const TO_ADDR: (&str, &str) = ("NR.Pollard@mbro.ac.uk", "Neil R Pollard");
 const FROM_ADDR: (&str, &str) = ("spellcheck@aagh.net", "Neil's Spellchecker");
 const RETURN_ADDR: &str = "noreply@aagh.net";
 
@@ -156,12 +158,31 @@ fn main() {
 
     out.push_str("</body></html>");
 
+    let encoded_body = base64::encode(&body);
+    let attachment = PartBuilder::new()
+        .body(encoded_body)
+        .header((
+            "Content-Disposition",
+            "attachment; filename=\"original.html\""
+        ))
+        .header((
+            "Content-Type",
+            "text/html"
+        ))
+        .header((
+            "Content-Transfer-Encoding",
+            "base64"
+        ))
+        .build();
+
     let fwd = EmailBuilder::new()
         .to(TO_ADDR)
         .from(FROM_ADDR)
         .subject(format!("[SPELL]: {}", mail.headers.get_first_value("Subject").expect("Subject").unwrap_or_else(|| "<no subject>".to_string())))
-        .header(Header::new("Return-Path".to_owned(), RETURN_ADDR.to_owned()))
+        .header(("Return-Path", RETURN_ADDR))
+        .message_type(MimeMultipartType::Mixed)
         .html(out) // XXX: also attach the original?
+        .child(attachment)
         .build()
         .expect("Failed to build email");
 
