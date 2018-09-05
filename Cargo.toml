@@ -7,3 +7,5 @@ authors = ["Thomas Hurst <tom@hur.st>"]
 select = "0.4.2"
 mailparse = "0.6.2"
 ispell = "0.3.0"
+lettre = "0.8.2"
+lettre_email = "0.8.2"

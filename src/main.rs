@@ -1,8 +1,13 @@
 extern crate ispell;
 extern crate mailparse;
+extern crate lettre;
+extern crate lettre_email;
 extern crate select;
 
 use mailparse::*;
+
+use lettre::{EmailTransport, SendmailTransport};
+use lettre_email::{EmailBuilder, Header};
 
 use select::document::Document;
 use select::predicate::Name;
@@ -11,8 +16,12 @@ use ispell::SpellLauncher;
 
 use std::collections::HashSet;
 use std::io::{self, Read};
+use std::fmt::Write;
 
 const LANG: &str = "en_GB";
+const TO_ADDR: (&str, &str) = ("tom@hur.st", "Thomas Hurst");
+const FROM_ADDR: (&str, &str) = ("spellcheck@aagh.net", "Neil's Spellchecker");
+const RETURN_ADDR: &str = "noreply@aagh.net";
 
 fn load_wordlist(name: &str) -> HashSet<String> {
     std::fs::read_to_string(name)
@@ -63,6 +72,8 @@ fn main() {
 
     let doc = Document::from(&body[..]);
 
+    let mut out = String::new();
+
     let header = r#"<html>
   <head>
     <meta charset='UTF-8'>
@@ -90,8 +101,10 @@ fn main() {
   </head>
   <body>
 "#;
-    println!("{}", header);
+    out.push_str(header);
 
+    // 123formbuilder's HTML is dubious at best.  Might be better to switch to
+    // regexp string mangling, since that's basically what they're doing in reverse.
     for row in doc.find(Name("tr")) {
         let mut cols = row.find(Name("td"));
 
@@ -128,16 +141,29 @@ fn main() {
             }).collect::<Vec<String>>()
             .join("<br>\n");
 
-        let out = match &question[..] {
+        let ans = match &question[..] {
             "Name" | "Date" => htmlentities(&answer),
             _ => corrected,
         };
 
-        println!(
-            "<section>\n<h1>{}</h1>\n<p>{}</p></section>",
+        writeln!(&mut out,
+            "<section>\n<h1>{}</h1>\n<p>{}</p>\n</section>",
             htmlentities(&question),
-            out
-        );
+            ans
+        ).ok();
     }
-    println!("</body></html>");
+
+    out.push_str("</body></html>");
+
+    let fwd = EmailBuilder::new()
+        .to(TO_ADDR)
+        .from(FROM_ADDR)
+        .subject(format!("[SPELL]: {}", mail.headers.get_first_value("Subject").expect("Subject").unwrap_or_else(|| "<no subject>".to_string())))
+        .header(Header::new("Return-Path".to_owned(), RETURN_ADDR.to_owned()))
+        .html(out) // XXX: also attach the original?
+        .build()
+        .expect("Failed to build email");
+
+    let mut mailer = SendmailTransport::new_with_command("./cat.sh");
+    mailer.send(&fwd).expect("Error sending mail");
 }
