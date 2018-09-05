@@ -1,7 +1,7 @@
 extern crate ispell;
-extern crate mailparse;
 extern crate lettre;
 extern crate lettre_email;
+extern crate mailparse;
 extern crate select;
 
 use mailparse::*;
@@ -15,8 +15,8 @@ use select::predicate::Name;
 use ispell::SpellLauncher;
 
 use std::collections::HashSet;
-use std::io::{self, Read};
 use std::fmt::Write;
+use std::io::{self, Read};
 
 const LANG: &str = "en_GB";
 const TO_ADDR: (&str, &str) = ("tom@hur.st", "Thomas Hurst");
@@ -146,7 +146,8 @@ fn main() {
             _ => corrected,
         };
 
-        writeln!(&mut out,
+        writeln!(
+            &mut out,
             "<section>\n<h1>{}</h1>\n<p>{}</p>\n</section>",
             htmlentities(&question),
             ans
