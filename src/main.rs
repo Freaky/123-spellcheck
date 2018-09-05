@@ -25,7 +25,7 @@ fn load_wordlist(name: &str) -> HashSet<String> {
 
 fn main() {
     let mut input = Vec::new();
-    io::stdin().read_to_end(&mut input).expect("reading input");
+    io::stdin().take(1024 * 128).read_to_end(&mut input).expect("reading input");
 
     let mail = parse_mail(&input).expect("parsing email");
 
