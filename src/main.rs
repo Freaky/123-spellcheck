@@ -124,17 +124,31 @@ fn main() -> Result<(), String> {
     <style>
       body {
         line-height: 1.3;
-        font: Georgia, 'Times New Roman', Times, serif;
+        font-family: "Times New Roman", Times, serif;
+      }
+
+      h1, h2 {
+        font-family: sans-serif;
+        font-weight: normal;
+        border-bottom: 2px solid black;
+      }
+
+      p {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
       }
 
       mark {
-        background-color: purple;
-        color: white;
+        background-color: rgba(128,0,128, 0.3);
+        color: black;
+        color-adjust: exact;
+        -webkit-print-color-adjust: exact;
       }
 
-      @media print {
-        mark {
-          text-decoration: underline;
+      @media screen {
+        section {
+          max-width: 48em;
+          margin: auto;
         }
       }
 
@@ -146,6 +160,8 @@ fn main() -> Result<(), String> {
   <body>
 "#;
     out.push_str(header);
+
+    let mut first = true;
 
     // 123formbuilder's HTML is dubious at best.  Might be better to switch to
     // regexp string mangling, since that's basically what they're doing in reverse.
@@ -194,10 +210,14 @@ fn main() -> Result<(), String> {
             _ => corrected,
         };
 
+        let hlevel = if first { 1 } else { 2 };
+        first = false;
         writeln!(
             &mut out,
-            "<section>\n<h1>{}</h1>\n<p>{}</p>\n</section>",
+            "<section>\n<h{}>{}</h{}>\n<p>{}</p>\n</section>",
+            hlevel,
             htmlentities(&question),
+            hlevel,
             ans
         ).ok();
     }
@@ -232,6 +252,7 @@ fn main() -> Result<(), String> {
         .map_err(|e| format!("Failed to build email: {}", e))?;
 
     let mut mailer = if config.email.dry_run {
+        println!("{}", &out);
         SendmailTransport::new_with_command("./cat.sh")
     } else {
         SendmailTransport::new()
