@@ -217,7 +217,7 @@ fn main() -> Result<(), String> {
     let orig_subject = mail
         .headers
         .get_first_value("Subject")
-        .expect("Subject")
+        .map_err(|e| format!("Failed to get Subject: {}", e))?
         .unwrap_or_else(|| "<no subject>".to_string());
 
     let fwd = EmailBuilder::new()
