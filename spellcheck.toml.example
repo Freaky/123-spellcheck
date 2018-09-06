@@ -8,3 +8,4 @@ from = { name = "Spellchecker", address = "spellcheck@domain.example" }
 to = { name = "A User", address = "someone@domain.example" }
 return_path = "noreply@domain.example"
 max_size_kb = 128
+dry_run = true
