@@ -23,7 +23,7 @@ use std::fmt::Write;
 use std::io::{self, Read};
 use std::path::PathBuf;
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 struct Config {
     lang: String,
@@ -31,23 +31,25 @@ struct Config {
     email: EmailConfig,
 }
 
-#[derive(Deserialize, PartialEq, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 #[serde(deny_unknown_fields, default)]
 struct Words {
     allow: HashSet<String>,
     deny: HashSet<String>,
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 struct EmailConfig {
     max_size_kb: Option<u64>,
     to: EmailAddr,
     from: EmailAddr,
     return_path: String,
+    #[serde(default)]
+    dry_run: bool
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 struct EmailAddr {
     name: Option<String>,
@@ -229,7 +231,12 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| format!("Failed to build email: {}", e))?;
 
-    let mut mailer = SendmailTransport::new_with_command("./cat.sh");
+    let mut mailer = if config.email.dry_run {
+        SendmailTransport::new_with_command("./cat.sh")
+    } else {
+        SendmailTransport::new()
+    };
+
     mailer
         .send(&fwd)
         .map_err(|e| format!("Failed to send email: {}", e))?;
