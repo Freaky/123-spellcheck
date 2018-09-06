@@ -46,7 +46,7 @@ struct EmailConfig {
     from: EmailAddr,
     return_path: String,
     #[serde(default)]
-    dry_run: bool
+    dry_run: bool,
 }
 
 #[derive(Deserialize, Debug)]
