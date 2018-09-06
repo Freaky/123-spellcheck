@@ -204,12 +204,12 @@ fn main() -> Result<(), String> {
 
     out.push_str("</body></html>");
 
-    let encoded_body = base64::encode(&body);
+    let encoded_body = base64::encode(&out);
     let attachment = PartBuilder::new()
         .body(encoded_body)
         .header((
             "Content-Disposition",
-            "attachment; filename=\"original.html\"",
+            "attachment; filename=\"spellchecked.html\"",
         )).header(("Content-Type", "text/html"))
         .header(("Content-Transfer-Encoding", "base64"))
         .build();
@@ -226,7 +226,7 @@ fn main() -> Result<(), String> {
         .subject(format!("[SPELL]: {}", orig_subject))
         .header(("Return-Path", config.email.return_path))
         .message_type(MimeMultipartType::Mixed)
-        .html(out) // XXX: also attach the original?
+        .html(body)
         .child(attachment)
         .build()
         .map_err(|e| format!("Failed to build email: {}", e))?;
