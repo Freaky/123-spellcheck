@@ -1,0 +1,83 @@
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on voi.aagh.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=4.0 tests=BAYES_00,HTML_MESSAGE,
+	HTML_MIME_NO_HTML_TAG,MIME_HTML_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.1
+Received: by cpc95882-hart11-2-0-cust1933.11-3.cable.virginm.net (fdm 1.9, account "stdin");
+	Tue, 04 Sep 2018 14:47:36 +0100
+Received: from localhost
+	([127.0.0.1] helo=voi.aagh.net ident=fetchmail)
+	by voi.aagh.net with esmtp (Exim 4.91 (FreeBSD))
+	(envelope-from <noreply@123formbuilder.io>)
+	id 1fxBg7-00073p-VI
+	for freaky@localhost; Tue, 04 Sep 2018 14:47:36 +0100
+Received: from 10.0.0.2 [10.0.0.2]
+	by voi.aagh.net with POP3 (fetchmail-6.3.26)
+	for <freaky@localhost> (single-drop); Tue, 04 Sep 2018 14:47:35 +0100 (BST)
+Received: from admin.123formbuilder.io ([34.236.173.200])
+	by ita.aagh.net with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+	(Exim 4.91 (FreeBSD))
+	(envelope-from <noreply@123formbuilder.io>)
+	id 1fxBWt-000FPD-Pr
+	for tom@hur.st; Tue, 04 Sep 2018 14:38:03 +0100
+Received: from app-1b-1.localdomain (app-1b-1.123formbuilder.io [10.20.0.225])
+	by admin.123formbuilder.io (8.14.4/8.14.4) with ESMTP id w84DbuqP013123
+	for <tom@hur.st>; Tue, 4 Sep 2018 08:37:57 -0500
+Received: from app-1b-1.localdomain (ip6-localhost [127.0.0.1])
+	by app-1b-1.localdomain (8.14.4/8.14.4) with ESMTP id w84Dbu25010031
+	for <tom@hur.st>; Tue, 4 Sep 2018 08:37:56 -0500
+Received: (from apache@localhost)
+	by app-1b-1.localdomain (8.14.4/8.14.4/Submit) id w84DbtGF010025;
+	Tue, 4 Sep 2018 08:37:55 -0500
+To: "tom@hur.st" <tom@hur.st>
+Subject: [My Form]
+X-PHP-Originating-Script: 500:class.phpmailer_v5.php
+Date: Tue, 4 Sep 2018 09:37:55 -0400
+From: 123FormBuilder <noreply@123formbuilder.io>
+Message-ID: <86ea8d6bc78f63268057d84d12f9a52f@www.123formbuilder.com>
+X-Priority: 3
+X-Mailer: PHPMailer 5.2.7 (https://github.com/PHPMailer/PHPMailer/)
+X-123form-id: 4144240
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<table cellspacing="0" cellpadding="5" style="width:100%; border:solid 1px #E0E0E0; border-collapse:collapse;">
+<tr style="background-color:#F0F0F0;"><td style="background-color:#F0F0F0;padding:5px;" valign="top" width="200"><b>Name</b></td>
+<td style="background-color:#F0F0F0;padding:5px;">Thomas Hurst</td>
+</tr>
+
+<tr style="background-color:#FFFFFF;"><td style="background-color:#FFFFFF;padding:5px;" valign="top" width="200"><b>Date</b></td>
+<td style="background-color:#FFFFFF;padding:5px;">04/09/2018</td>
+</tr>
+
+<tr style="background-color:#F0F0F0;"><td style="background-color:#F0F0F0;padding:5px;" valign="top" width="200"><b>Please describe the procedure when installing a wc. (Toilet)</b></td>
+<td style="background-color:#F0F0F0;padding:5px;">First you make sure you've been paid in advance, in case the customer is unreasonable.<br />
+
+<br />
+
+You put down towels, then you bash the old toilet off with a hammer.<br />
+
+<br />
+
+Once all the pieces have been removed & the water saoked away,u rub down the exposed pipes with sand paper to get rid of any rough edges, using the flowing water from the inet pipe to keep cóól.<br />
+
+<br />
+
+Then you go to lunch, preferably somewhere with a working toilet.<br />
+
+<br />
+
+When you return, u use the flood water to float the new toilet into position, minimsing back injury risk.<br />
+
+<br />
+
+When it's in place, apply super glue to the bits where the pipes go, and then hold it in place while the glue sets.  Flooding will subside naturally.</td>
+</tr>
+
+</table>
+
+<br>The message has been sent from 82.24.167.142 (United Kingdom) at 2018-09-04 09:37:55 on Firefox  61.0<br>Entry ID: 2
+
+
+

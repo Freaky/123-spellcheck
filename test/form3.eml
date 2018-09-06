@@ -1,0 +1,63 @@
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on voi.aagh.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=4.0 tests=BAYES_00,HTML_MESSAGE,
+	HTML_MIME_NO_HTML_TAG,MIME_HTML_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.1
+Received: by cpc95882-hart11-2-0-cust1933.11-3.cable.virginm.net (fdm 1.9, account "stdin");
+	Tue, 04 Sep 2018 17:10:38 +0100
+Received: from localhost
+	([127.0.0.1] helo=voi.aagh.net ident=fetchmail)
+	by voi.aagh.net with esmtp (Exim 4.91 (FreeBSD))
+	(envelope-from <noreply@123formbuilder.io>)
+	id 1fxDuY-000GQo-7r
+	for freaky@localhost; Tue, 04 Sep 2018 17:10:38 +0100
+Received: from 10.0.0.2 [10.0.0.2]
+	by voi.aagh.net with POP3 (fetchmail-6.3.26)
+	for <freaky@localhost> (single-drop); Tue, 04 Sep 2018 17:10:38 +0100 (BST)
+Received: from admin.123formbuilder.io ([34.236.173.200])
+	by ita.aagh.net with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+	(Exim 4.91 (FreeBSD))
+	(envelope-from <noreply@123formbuilder.io>)
+	id 1fxDuN-0009Du-93
+	for tom@hur.st; Tue, 04 Sep 2018 17:10:27 +0100
+Received: from app-1b-4.localdomain (app-1b-4.123formbuilder.io [10.20.2.89])
+	by admin.123formbuilder.io (8.14.4/8.14.4) with ESMTP id w84GAKU2017980
+	for <tom@hur.st>; Tue, 4 Sep 2018 11:10:20 -0500
+Received: from app-1b-4.localdomain (ip6-localhost [127.0.0.1])
+	by app-1b-4.localdomain (8.14.4/8.14.4) with ESMTP id w84GAKPC025920
+	for <tom@hur.st>; Tue, 4 Sep 2018 11:10:20 -0500
+Received: (from apache@localhost)
+	by app-1b-4.localdomain (8.14.4/8.14.4/Submit) id w84GAJo6025918;
+	Tue, 4 Sep 2018 11:10:19 -0500
+To: "tom@hur.st" <tom@hur.st>
+Subject: [My Form]
+X-PHP-Originating-Script: 500:class.phpmailer_v5.php
+Date: Tue, 4 Sep 2018 12:10:19 -0400
+From: 123FormBuilder <noreply@123formbuilder.io>
+Message-ID: <047d664783a82a028b28cea5554df3d7@www.123formbuilder.com>
+X-Priority: 3
+X-Mailer: PHPMailer 5.2.7 (https://github.com/PHPMailer/PHPMailer/)
+X-123form-id: 4144240
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<table cellspacing="0" cellpadding="5" style="width:100%; border:solid 1px #E0E0E0; border-collapse:collapse;">
+<tr style="background-color:#F0F0F0;"><td style="background-color:#F0F0F0;padding:5px;" valign="top" width="200"><b>Name</b></td>
+<td style="background-color:#F0F0F0;padding:5px;">Thom<as> Hur<st></td>
+</tr>
+
+<tr style="background-color:#FFFFFF;"><td style="background-color:#FFFFFF;padding:5px;" valign="top" width="200"><b>Date</b></td>
+<td style="background-color:#FFFFFF;padding:5px;">04/09/2018</td>
+</tr>
+
+<tr style="background-color:#F0F0F0;"><td style="background-color:#F0F0F0;padding:5px;" valign="top" width="200"><b>Please describe the procedure when installing a wc. (Toilet)</b></td>
+<td style="background-color:#F0F0F0;padding:5px;"><a href="foo"><em>bar&foo</a><script>alert("hi")</script></td>
+</tr>
+
+</table>
+
+<br>The message has been sent from 82.24.167.142 (United Kingdom) at 2018-09-04 12:10:19 on Firefox  61.0<br>Entry ID: 3
+
+
+
