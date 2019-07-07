@@ -1,29 +1,17 @@
-extern crate base64;
-extern crate ispell;
-extern crate lettre;
-extern crate lettre_email;
-extern crate mailparse;
-extern crate select;
-#[macro_use]
-extern crate serde_derive;
-extern crate toml;
-
-use mailparse::*;
-
-use lettre::file::FileTransport;
-use lettre::sendmail::SendmailTransport;
-use lettre::Transport;
-use lettre_email::{EmailBuilder, Mailbox, MimeMultipartType, PartBuilder};
-
-use select::document::Document;
-use select::predicate::Name;
-
-use ispell::SpellLauncher;
-
 use std::collections::HashSet;
 use std::fmt::Write;
 use std::io::{self, Read};
 use std::path::PathBuf;
+
+use ispell::SpellLauncher;
+use lettre::file::FileTransport;
+use lettre::sendmail::SendmailTransport;
+use lettre::Transport;
+use lettre_email::{EmailBuilder, Mailbox, MimeMultipartType, PartBuilder};
+use mailparse::*;
+use select::document::Document;
+use select::predicate::Name;
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
@@ -77,7 +65,8 @@ fn htmlentities(txt: &str) -> String {
             "'" => "&#39;",
             "\"" => "&quot;",
             _ => ch,
-        }).collect()
+        })
+        .collect()
 }
 
 fn main() -> Result<(), String> {
@@ -202,9 +191,11 @@ fn main() -> Result<(), String> {
                         } else {
                             format!("<mark>{}</mark>", htmlentities(word))
                         }
-                    }).collect::<Vec<String>>()
+                    })
+                    .collect::<Vec<String>>()
                     .join(" ")
-            }).collect::<Vec<String>>()
+            })
+            .collect::<Vec<String>>()
             .join("<br>\n");
 
         let ans = match &question[..] {
@@ -221,7 +212,8 @@ fn main() -> Result<(), String> {
             htmlentities(&question),
             hlevel,
             ans
-        ).ok();
+        )
+        .ok();
     }
 
     out.push_str("</body></html>");
@@ -232,7 +224,8 @@ fn main() -> Result<(), String> {
         .header((
             "Content-Disposition",
             "attachment; filename=\"spellchecked.html\"",
-        )).header(("Content-Type", "text/html"))
+        ))
+        .header(("Content-Type", "text/html"))
         .header(("Content-Transfer-Encoding", "base64"))
         .build();
 
@@ -255,7 +248,9 @@ fn main() -> Result<(), String> {
 
     if config.email.dry_run {
         println!("{}", &out);
-        FileTransport::new(".").send(fwd.into()).expect("Failed writing test message");
+        FileTransport::new(".")
+            .send(fwd.into())
+            .expect("Failed writing test message");
     } else {
         SendmailTransport::new()
             .send(fwd.into())
