@@ -10,7 +10,9 @@ extern crate toml;
 
 use mailparse::*;
 
-use lettre::{EmailTransport, SendmailTransport};
+use lettre::file::FileTransport;
+use lettre::sendmail::SendmailTransport;
+use lettre::Transport;
 use lettre_email::{EmailBuilder, Mailbox, MimeMultipartType, PartBuilder};
 
 use select::document::Document;
@@ -251,16 +253,14 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| format!("Failed to build email: {}", e))?;
 
-    let mut mailer = if config.email.dry_run {
+    if config.email.dry_run {
         println!("{}", &out);
-        SendmailTransport::new_with_command("./cat.sh")
+        FileTransport::new(".").send(fwd.into()).expect("Failed writing test message");
     } else {
         SendmailTransport::new()
+            .send(fwd.into())
+            .map_err(|e| format!("Failed to send email: {}", e))?;
     };
-
-    mailer
-        .send(&fwd)
-        .map_err(|e| format!("Failed to send email: {}", e))?;
 
     Ok(())
 }
