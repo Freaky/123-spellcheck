@@ -1,4 +1,4 @@
-# Neil's Spellchecker Thing
+# 123 Spellcheck
 
 This is a small Rust program for parsing HTML emails from 123formbuilder.com
 and running GNU aspell on responses.  The results are reformulated into an email
@@ -14,7 +14,7 @@ Configuration is via a TOML file such as the example `spellcheck.toml.example`.
 -% cp target/release/neils-spellchecker /path/to/somewhere
 -% cp spellcheck.toml.example /path/to/spellcheck.toml
 -% $EDITOR /path/to/spellcheck.toml
--% echo "spellcheck: |/path/to/somewhere/neils-spellchecker /path/to/spellcheck.toml 2>&1 | logger" >>/etc/aliases
+-% echo "spellcheck: |/path/to/somewhere/123-spellcheck /path/to/spellcheck.toml 2>&1 | logger" >>/etc/aliases
 ```
 
 Adjust to taste: it eats an email on stdin, uses `sendmail` to send the
